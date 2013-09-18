@@ -1,3 +1,10 @@
+"""
+This file is used to simulate a portfolio for Computational Investing Part 1
+This is for Homework 1
+Author: Benjamin Ross
+Date: 9/13/2013
+"""
+
 import QSTK.qstkutil.qsdateutil as du
 import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkutil.DataAccess as da
