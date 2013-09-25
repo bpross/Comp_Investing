@@ -44,15 +44,28 @@ def main(argv):
 
     close_prices, trading_days = get_close_data(start_date, end_date, symbols)
 
-    trades_executed = 0
     trades_copy = list(trades)
     index = []
-
+    position = {'cash': port_cash}
+    for symbol in symbols:
+        position[symbol] = 0
+    daily_values = []
     for i in range (0,len(trading_days)):
         for j in range(0,len(trades)):
             if trades[j].date == trading_days[i]:
-                print trades[j]
                 index.append(j)
+                if trades[j].command == "Buy":
+                    print "buy"
+                    price = close_prices[i][symbols.index(trades[j].symbol)]
+                    value = float(price) * float(trades[j].amount)
+                    position[trades[j].symbol] = float(trades[j].amount)
+                    position['cash'] = float(position['cash']) - float(value)
+                elif trades[j].command == "Sell":
+                    print "sell"
+                    price = close_prices[i][symbols.index(trades[j].symbol)]
+                    if trades[j].amount > position[trades[j].symbol]:
+                        print "Not enough shares!"
+
         for k in range(0,len(index)):
             trades.pop(index[k])
         index = []
