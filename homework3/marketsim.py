@@ -47,30 +47,36 @@ def main(argv):
     position = {'cash' : port_cash}
     for symbol in symbols:
         position[symbol] = 0
+    daily_value = []
 
     for day in trading_days:
         for trade in trades:
             if trade.date == day:
+                sym_price = close_prices[trading_days.index(day)][symbols.index(trade.symbol)]
+                trade_value = sym_price * float(trade.amount)
                 if trade.command in "Buy":
-                    print "TODAY WE BUY"
-                    print trade
-                    sym_price = close_prices[trading_days.index(day)][symbols.index(trade.symbol)]
-                    print sym_price
                     trade_value = sym_price * float(trade.amount)
-                    print trade_value
                     position['cash'] = float(position['cash'])- trade_value
-                    print "Cash " + str(position['cash'])
+                    position[trade.symbol] += int(trade.amount)
                 elif trade.command in "Sell":
-                    print "TODAY WE SELL"
-                    print trade
-                    sym_price = close_prices[trading_days.index(day)][symbols.index(trade.symbol)]
-                    print sym_price
-                    trade_value = sym_price * float(trade.amount)
-                    print trade_value
                     position['cash'] = float(position['cash'])+ trade_value
-                    print "Cash " + str(position['cash'].round())
+                    position[trade.symbol] -= int(trade.amount)
                 else:
                     print "OOPS :("
+                daily_val = 0
+                for symbol in symbols:
+                    daily_val += float(position[symbol]) * sym_price
+                daily_val += float(position['cash'])
+                daily_value.append(daily_val)
+            else:
+                sym_price = close_prices[trading_days.index(day)][symbols.index(trade.symbol)]
+                daily_val = 0
+                for symbol in symbols:
+                    daily_val += float(position[symbol]) * sym_price
+                daily_val += float(position['cash'])
+                daily_value.append(daily_val)
+
+    print "Final Value: " + str(daily_value[-1].round())
 
 def read_trades(trade_file):
     """
