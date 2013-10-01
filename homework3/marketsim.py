@@ -48,7 +48,7 @@ def main(argv):
     for symbol in symbols:
         position[symbol] = 0
     daily_value = []
-
+    print_list = []
     for day in trading_days:
         for trade in trades:
             if trade.date == day:
@@ -71,8 +71,12 @@ def main(argv):
             daily_val = daily_val + value
         daily_val += float(position['cash'])
         daily_value.append(daily_val.round())
+        
+        dt = day.timetuple()
+        daily_str = [dt[0], dt[1], dt[2], daily_value[-1]]
+        print_list.append(daily_str)
 
-
+    write_daily_val(print_list, output_file)
     std_daily_ret_port, avg_daily_ret_port, sharpe_ratio_port, cum_return_port = comp_metrics(daily_value)
 
     symbols = ["$SPX"]
@@ -137,6 +141,17 @@ def read_trades(trade_file):
     symbols = OrderedDict.fromkeys(symbols).keys()
 
     return start_date, end_date, symbols, trades
+
+def write_daily_val(values,ofile):
+    """
+    Prints the list of values to ofile in csv
+    @values: list of values to print
+    @ofile: file to print to
+    """
+    ofile = open(ofile,"wb")
+    writer = csv.writer(ofile,skipinitialspace=True, quoting=csv.QUOTE_NONE)
+    writer.writerows(values)
+    ofile.close()
 
 def get_close_data(start_date, end_date, symbols):
     """
