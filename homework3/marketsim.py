@@ -1,3 +1,10 @@
+"""
+Author: Benjamin Ross
+Date: 10/01/2013
+
+Copyright 2013 All rights reserved
+
+"""
 import sys
 from collections import namedtuple, OrderedDict
 import datetime as dt
