@@ -70,43 +70,13 @@ def main(argv):
             value = float(position[symbol]) * sym_price
             daily_val = daily_val + value
         daily_val += float(position['cash'])
-        daily_value.append(daily_val.round())
+        daily_value.append(daily_val)
         
         dt = day.timetuple()
         daily_str = [dt[0], dt[1], dt[2], daily_value[-1]]
         print_list.append(daily_str)
 
     write_daily_val(print_list, output_file)
-    std_daily_ret_port, avg_daily_ret_port, sharpe_ratio_port, cum_return_port = comp_metrics(daily_value)
-
-    symbols = ["$SPX"]
-    close_prices, trading_days = get_close_data(start_date, end_date, symbols)
-
-    std_daily_ret, avg_daily_ret, sharpe_ratio, cum_return = comp_metrics(close_prices)
-
-def comp_metrics(daily_rets):
-    """
-    Compute the following metrics for the portfolio:
-        avg_daily_return
-        std_dev_daily_ret
-        sharpe_ratio
-        cum_return
-    """
-    _daily_rets = list(daily_rets)
-    
-    _daily_rets = _daily_rets / _daily_rets[0]
-    #Calculate the cumulative return for the portfolio
-    cum_return = _daily_rets[-1]-_daily_rets[0]/_daily_rets[0] + 1
-    tsu.returnize0(_daily_rets)
-    # Calculate average daily return
-    avg_daily_ret = np.average(_daily_rets)
-    # Calculate std dev of daily return (volatility) 
-    std_daily_ret = np.std(_daily_rets)
-
-    # Calculate sharpe ratio
-    sharpe_ratio = (avg_daily_ret/std_daily_ret)*sqrt(252.0)
-
-    return std_daily_ret, avg_daily_ret, sharpe_ratio, cum_return
 
 def read_trades(trade_file):
     """
