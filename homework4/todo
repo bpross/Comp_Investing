@@ -1,0 +1,8 @@
+Todo for project:
+- start executing trades
+    - need to keep track of cash, and number of shares for each symbol
+    - use dict to do this, key is symbol, value is number of shares
+- for each day of trading, roll through positions and find value
+- create chart
+- compute metrics
+    - can use what we did for the first homework here
