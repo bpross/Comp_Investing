@@ -24,6 +24,9 @@ import datetime as dt
 import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
+import re
+from collections import namedtuple
+import csv
 
 """
 Accepts a list of symbols along with start and end date
@@ -41,13 +44,13 @@ nan = no information about any event.
 1 = status bit(positively confirms the event occurence)
 """
 
+Trade = namedtuple('Trade',['year','month','day','symbol','command','amount'])
 
 def find_events(ls_symbols, d_data):
     ''' Finding the event dataframe '''
     df_close = d_data['actual_close']
     ts_market = df_close['SPY']
-
-    print "Finding Events"
+    trades = []
 
     # Creating an empty dataframe
     df_events = copy.deepcopy(df_close)
@@ -55,7 +58,6 @@ def find_events(ls_symbols, d_data):
 
     # Time stamps for the event range
     ldt_timestamps = df_close.index
-
     for s_sym in ls_symbols:
         for i in range(1, len(ldt_timestamps)):
             # Calculating the returns for this timestamp
@@ -69,11 +71,42 @@ def find_events(ls_symbols, d_data):
             # Event is found if the symbol is down more then 3% while the
             # market is up more then 2%
             if f_symprice_yest >= 5.0 and f_symprice_today < 5.0:
-                df_events[s_sym].ix[ldt_timestamps[i]] = 1
-                print "Buying: " + s_sym + " on: " + str(ldt_timestamps[i])
+                buy_date = return_dt(str(ldt_timestamps[i]))
+                sell_date = return_dt(str(ldt_timestamps[i+4]))
+                buy_trade = Trade(buy_date.group(1), buy_date.group(2), buy_date.group(3), s_sym, "Buy", 100)
+                sell_trade = Trade(sell_date.group(1), sell_date.group(2), sell_date.group(3), s_sym, "Sell", 100)
+                trades.append(buy_trade)
+                trades.append(sell_trade)
 
-    return df_events
+    return trades
 
+
+def return_dt(date):
+    """
+    Takes a pandas timestamp object and returns a datetime object
+    """
+    regex = re.compile("(\d{4})-(\d{2})-(\d{2})")
+    r = regex.search(date)
+    return r
+
+def trade_to_string(trades):
+    """
+    Takes a list of Trades and returns a list of strings
+    """
+    trade_str = []
+    for trade in trades:
+        t_str = [trade.year,trade.month,trade.day,trade.symbol, trade.command, trade.amount]
+        trade_str.append(t_str)
+    return trade_str
+
+def trades_to_csv(trades):
+    """
+    Takes a list of trade strings and outputs to csv file
+    """
+    ofile = open('trades.csv',"wb")
+    writer = csv.writer(ofile,skipinitialspace=True, quoting=csv.QUOTE_NONE)
+    writer.writerows(trades)
+    ofile.close()
 
 if __name__ == '__main__':
     dt_start = dt.datetime(2008, 1, 1)
@@ -93,8 +126,10 @@ if __name__ == '__main__':
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
         d_data[s_key] = d_data[s_key].fillna(1.0)
 
-    df_events = find_events(ls_symbols, d_data)
-    print "Creating Study"
+    trades = find_events(ls_symbols, d_data)
+    tr_str = trade_to_string(trades)
+    trades_to_csv(tr_str)
+
     #ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
     #            s_filename='sp5002012_study_price6.pdf', b_market_neutral=True, b_errorbars=True,
     #            s_market_sym='SPY')

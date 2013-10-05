@@ -77,7 +77,7 @@ def main(argv):
             value = float(position[symbol]) * sym_price
             daily_val = daily_val + value
         daily_val += float(position['cash'])
-        daily_value.append(daily_val)
+        daily_value.append(daily_val.round())
         
         dt = day.timetuple()
         daily_str = [dt[0], dt[1], dt[2], daily_value[-1]]
@@ -150,6 +150,11 @@ def get_close_data(start_date, end_date, symbols):
     ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
     ldf_data = c_dataobj.get_data(ldt_timestamps, symbols, ls_keys)
     d_data = dict(zip(ls_keys, ldf_data))
+
+    for s_key in ls_keys:
+        d_data[s_key] = d_data[s_key].fillna(method='ffill')
+        d_data[s_key] = d_data[s_key].fillna(method='bfill')
+        d_data[s_key] = d_data[s_key].fillna(1.0)
 
     close_price = d_data['close'].values
 
