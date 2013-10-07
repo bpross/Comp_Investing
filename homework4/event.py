@@ -70,9 +70,9 @@ def find_events(ls_symbols, d_data):
 
             # Event is found if the symbol is down more then 3% while the
             # market is up more then 2%
-            if f_symprice_yest >= 5.0 and f_symprice_today < 5.0:
+            if f_symprice_yest >= 6.0 and f_symprice_today < 6.0:
                 buy_date = return_dt(str(ldt_timestamps[i]))
-                sell_date = return_dt(str(ldt_timestamps[i+4]))
+                sell_date = return_dt(str(ldt_timestamps[i+5]))
                 buy_trade = Trade(buy_date.group(1), buy_date.group(2), buy_date.group(3), s_sym, "Buy", 100)
                 sell_trade = Trade(sell_date.group(1), sell_date.group(2), sell_date.group(3), s_sym, "Sell", 100)
                 trades.append(buy_trade)
@@ -112,7 +112,6 @@ if __name__ == '__main__':
     dt_start = dt.datetime(2008, 1, 1)
     dt_end = dt.datetime(2009, 12, 31)
     ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
-
     dataobj = da.DataAccess('Yahoo')
     ls_symbols = dataobj.get_symbols_from_list('sp5002012')
     ls_symbols.append('SPY')
