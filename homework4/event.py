@@ -70,9 +70,12 @@ def find_events(ls_symbols, d_data):
 
             # Event is found if the symbol is down more then 3% while the
             # market is up more then 2%
-            if f_symprice_yest >= 6.0 and f_symprice_today < 6.0:
+            if f_symprice_yest >= 9.0 and f_symprice_today < 9.0:
                 buy_date = return_dt(str(ldt_timestamps[i]))
-                sell_date = return_dt(str(ldt_timestamps[i+5]))
+                if i+5 > len(ldt_timestamps):
+                    sell_date = return_dt(str(ldt_timestamps[-1]))
+                else:
+                    sell_date = return_dt(str(ldt_timestamps[i+5]))
                 buy_trade = Trade(buy_date.group(1), buy_date.group(2), buy_date.group(3), s_sym, "Buy", 100)
                 sell_trade = Trade(sell_date.group(1), sell_date.group(2), sell_date.group(3), s_sym, "Sell", 100)
                 trades.append(buy_trade)
