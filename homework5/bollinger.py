@@ -38,12 +38,15 @@ def main(argv):
 
     lookback = 20
 
-    close_appl = df_close['MSFT']
-    roll_mean = pd.stats.moments.rolling_mean(close_appl,20)
-    roll_std = pd.stats.moments.rolling_std(close_appl,20)
-    for i in range(1, len(ldt_timestamps)):
-        bol_val = (df_close['MSFT'].ix[ldt_timestamps[i]] - roll_mean[i])/roll_std[i]
-        print str(ldt_timestamps[i]) + " " + str(bol_val)
+    bol_vals = get_bollinger_values(ls_symbols, d_data, lookback)
+    print bol_vals
+
+    #close_appl = df_close['MSFT']
+    #roll_mean = pd.stats.moments.rolling_mean(close_appl,20)
+    #roll_std = pd.stats.moments.rolling_std(close_appl,20)
+    #for i in range(1, len(ldt_timestamps)):
+    #    bol_val = (df_close['MSFT'].ix[ldt_timestamps[i]] - roll_mean[i])/roll_std[i]
+    #    print str(ldt_timestamps[i]) + " " + str(bol_val)
 
 def get_bollinger_values(symbols, d_data, lookback):
     """
@@ -55,6 +58,7 @@ def get_bollinger_values(symbols, d_data, lookback):
     roll_means = {}
     roll_stds = {}
     df_close = d_data['close']
+    bollinger_vals = {}
 
     for sym in symbols:
         close = df_close[sym]
@@ -62,12 +66,17 @@ def get_bollinger_values(symbols, d_data, lookback):
         roll_std = pd.stats.moments.rolling_std(close,lookback)
         roll_means[sym] = roll_mean
         roll_stds[sym] = roll_std
+        bollinger_vals[sym] = []
 
     ldt_timestamps = df_close.index
-    bollinger_vals = {}
     for i in range(1, len(ldt_timestamps)):
         for sym in symbols:
             sym_price_today = df_close[sym].ix[ldt_timestamps[i]]
+            bol_val = (sym_price_today - roll_means[sym][i])/roll_stds[sym][i]
+            bollinger_vals[sym].append(bol_val)
+
+    return bollinger_vals
+
 
 if __name__ =="__main__":
     main(sys.argv[1:])
