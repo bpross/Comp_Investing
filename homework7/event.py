@@ -65,15 +65,15 @@ def find_events(ls_symbols, d_data):
 
     for s_sym in ls_symbols:
         sym_bol_val = bol_vals[s_sym]
-        for i in range(0, len(ldt_timestamps)-1):
+        for i in range(1, len(ldt_timestamps)):
             # Get the bollinger values needed
             sym_bol_today = sym_bol_val[i]
             sym_bol_yest = sym_bol_val[i-1]
             spy_bol_today = spy_bol_val[i]
 
-            if sym_bol_today <= -2.0 and sym_bol_yest >= -2.0 and spy_bol_today >= 1.0:
+            if sym_bol_today <= -1.0 and sym_bol_yest >= -1.0 and spy_bol_today >= 1.0:
                 buy_date = return_dt(str(ldt_timestamps[i]))
-                if i+5 > len(ldt_timestamps):
+                if i+5 >= len(ldt_timestamps):
                     sell_date = return_dt(str(ldt_timestamps[-1]))
                 else:
                     sell_date = return_dt(str(ldt_timestamps[i+5]))
@@ -81,6 +81,8 @@ def find_events(ls_symbols, d_data):
                 sell_trade = Trade(sell_date.group(1), sell_date.group(2), sell_date.group(3), s_sym, "Sell", 100)
                 trades.append(buy_trade)
                 trades.append(sell_trade)
+
+
 
     return trades
 
@@ -113,11 +115,12 @@ def trades_to_csv(trades):
     ofile.close()
 
 if __name__ == '__main__':
-    dt_start = dt.datetime(2008, 1, 1)
-    dt_end = dt.datetime(2009, 12, 31)
+    dt_start = dt.datetime(2000, 1, 1)
+    dt_end = dt.datetime(2012, 12, 31)
     ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
     dataobj = da.DataAccess('Yahoo')
-    ls_symbols = dataobj.get_symbols_from_list('sp5002012')
+    #ls_symbols = dataobj.get_symbols_from_list('sp5002012')
+    ls_symbols = ['AAPL', 'GOOG', 'CSCO', 'YHOO', 'IBM', 'MSFT']
     ls_symbols.append('SPY')
 
     ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']

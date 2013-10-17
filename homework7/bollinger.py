@@ -69,7 +69,7 @@ def get_bollinger_values(symbols, d_data, lookback):
         bollinger_vals[sym] = []
 
     ldt_timestamps = df_close.index
-    for i in range(1, len(ldt_timestamps)):
+    for i in range(0, len(ldt_timestamps)):
         for sym in symbols:
             sym_price_today = df_close[sym].ix[ldt_timestamps[i]]
             bol_val = (sym_price_today - roll_means[sym][i])/roll_stds[sym][i]

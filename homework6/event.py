@@ -70,7 +70,7 @@ def find_events(ls_symbols, d_data):
             sym_bol_yest = sym_bol_val[i-1]
             spy_bol_today = spy_bol_val[i]
 
-            if sym_bol_today < -2.0 and sym_bol_yest >= -2.0 and spy_bol_today >= 1.4:
+            if sym_bol_today <= -2.0 and sym_bol_yest >= -2.0 and spy_bol_today >= 1.0:
                 df_events[s_sym].ix[ldt_timestamps[i]] = 1
 
 
@@ -97,6 +97,6 @@ if __name__ == '__main__':
 
     df_events = find_events(ls_symbols, d_data)
     print "Creating Study"
-    #ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-    #            s_filename='sp5002012_study_price6.pdf', b_market_neutral=True, b_errorbars=True,
-    #            s_market_sym='SPY')
+    ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
+                s_filename='sp5002012_study_price6.pdf', b_market_neutral=True, b_errorbars=True,
+                s_market_sym='SPY')

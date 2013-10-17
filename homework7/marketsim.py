@@ -48,6 +48,9 @@ def main(argv):
     print "Trading Starts on: " + str(start_date)
     print "Trading Ends on: "  + str(end_date)
     print "Trading these symbols: " + str(symbols)
+    print "Number of Trades: " + str(len(trades))
+    comission = 0.013 * len(trades) * 100
+    print "Comission and Fees: $" + str(comission)
 
     close_prices, trading_days = get_close_data(start_date, end_date, symbols)
 
